@@ -1,0 +1,76 @@
+---
+title: "Developing Data Products Course Project:"
+subtitle: 'Shiny Application and Reproducible Pitch'
+date: "August 8, 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Developing Data Products Course Project
+
+Students are tasked with creating a Shiny application and deploying it on Rstudio's servers.
+
+**Instructions:**
+
+1. Write a shiny application with associated supporting documentation. The documentation should be thought of as whatever a user will need to get started using your application.
+2. Deploy the application on Rstudio's shiny server
+3. Share the application link by pasting it into the provided text box
+4. Share your server.R and ui.R code on github
+
+## Galton Families Dataset {.smaller}
+```{r , message=FALSE, warning=FALSE}
+library(HistData)
+data(GaltonFamilies)
+```
+
+
+This data set gives data based on the famous 1885 study of Francis Galton exploring the relationship between the heights of adult children and the heights of their parents. It lists the individual observations for 934 children in 205 families on which Galton based his cross-tabulation.
+
+```{r, echo=TRUE}
+str(GaltonFamilies)
+```
+ 
+
+## Application Overview
+
+This application uses the Galton Families dataset to build a linear regression model to predict a child's height using the height of each parent and the child's gender. 
+
+**The application has 3 required inputs:**
+
+- Father's height in inches
+- Mother's height in inches
+- Child's gender
+
+Once all inputs are selected, the predicted height for the child will be displayed as a point on and a precise figure below the graph.
+
+## Sample Model Output {.smaller}
+
+**Linear Model:**
+```{r , echo=TRUE}
+model1 <- lm(childHeight ~ father + mother + gender, data=GaltonFamilies)
+model1pred <- predict(model1, newdata = data.frame(father = 70, mother = 65, gender = "male"))
+```
+
+```{r}
+Rounded_Pred <- round(model1pred, digits = 1)
+```
+**Predicted Child's Height: `r Rounded_Pred`**
+
+```{r, fig.height = 3.5, fig.width = 6, fig.align = "center"}
+plot(GaltonFamilies$childHeight ~ GaltonFamilies$midparentHeight, 
+     xlab = "Average Parent's Height (in inches)",
+     ylab = "Child's Height (in inches)", 
+     bty = "n", 
+     pch = 16, 
+     col=ifelse(GaltonFamilies$gender=="female", "pink", "light blue"))
+legend(73, 63, pch = 19, col =c("pink","light blue"), c("Female", "Male"), bty = "n", cex=.8)
+points(mean(c(70,65)), model1pred, col = "black", bg = "grey", pch = 23, cex = 2)
+
+```
+
+
+
+
